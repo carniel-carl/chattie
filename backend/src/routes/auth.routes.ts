@@ -5,6 +5,6 @@ import protectedRoute from "../middlewares/auth";
 const authRouter = Router();
 
 authRouter.get("/me", protectedRoute, getMe);
-authRouter.get("/callback", authCallback);
+authRouter.post("/callback", authCallback);
 
 export default authRouter;
