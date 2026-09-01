@@ -1,4 +1,6 @@
 import express from "express";
+import cors from "cors";
+
 import authRouter from "./routes/auth.routes";
 import userRouter from "./routes/user.routes";
 import { clerkMiddleware } from "@clerk/express";
@@ -7,6 +9,19 @@ import messageRouter from "./routes/message.routes";
 import chatRouter from "./routes/chat.routes";
 
 const app = express();
+
+const allowedOrigins = [
+  "http://localhost:8081", // expo mobile
+  "http://localhost:5173", // vite web devs
+  //   process.env.FRONTEND_URL!, // production
+].filter(Boolean);
+
+app.use(
+  cors({
+    origin: allowedOrigins,
+    credentials: true, // allow credentials from client (cookies, authorization headers, etc.)
+  }),
+);
 
 app.use(express.json());
 
