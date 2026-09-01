@@ -8,10 +8,15 @@ export interface IUser {
 export interface IChat {
   _id: string;
   participant: IUser;
-  lastMessage?: string;
-  lastMessageAt?: Date;
-  createdAt: Date;
-  updatedAt: Date;
+  lastMessage?: {
+    _id: string;
+    text: string;
+    sender: string;
+    createdAt: string;
+  };
+  lastMessageAt?: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface IMessage {
@@ -19,6 +24,8 @@ export interface IMessage {
   chat: string;
   sender: IUser;
   text: string;
-  createdAt: Date;
-  updatedAt: Date;
+  // dates arrive as JSON strings over HTTP/socket, not Date objects
+  createdAt: string;
+  // absent on optimistic messages that haven't been persisted yet
+  updatedAt?: string;
 }

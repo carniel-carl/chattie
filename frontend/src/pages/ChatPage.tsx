@@ -15,6 +15,8 @@ import { ChatInput } from "@/components/shared/chat/ChatInput";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { NewChatModal } from "@/components/shared/chat/NewChatModal";
 import { Button } from "@/components/ui/button";
+import { useSocketStore } from "@/lib/socket";
+import { useSocketConnection } from "@/hooks/useSocketConnection";
 
 // this code can be a lot cleaner, but here we try to keep it simple yet working
 // feel free to refactor it as you wish ✨
@@ -28,11 +30,13 @@ function ChatPage() {
   const [isNewChatModalOpen, setIsNewChatModalOpen] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
-  //   const typingTimeoutRef = useRef(null);
+  const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(
+    undefined,
+  );
 
-  //   const { socket, setTyping, sendMessage } = useSocketStore();
+  const { socket, setTyping, sendMessage } = useSocketStore();
 
-  //   useSocketConnection();
+  useSocketConnection(activeChatId);
 
   const { data: chats = [], isLoading: chatsLoading } = useChats();
   const { data: messages = [], isLoading: messagesLoading } =
@@ -52,22 +56,22 @@ function ChatPage() {
 
   const handleSend = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // if (!messageInput.trim() || !activeChatId || !socket || !currentUser)
+    if (!messageInput.trim() || !activeChatId || !socket || !currentUser) return;
 
-    // const text = messageInput.trim();
-    // sendMessage(activeChatId, text, currentUser);
-    // setMessageInput("");
-    // setTyping(activeChatId, false);
+    const text = messageInput.trim();
+    sendMessage(activeChatId, text, currentUser);
+    setMessageInput("");
+    setTyping(activeChatId, false);
   };
 
   const handleTyping = (e: React.ChangeEvent<HTMLInputElement>) => {
     setMessageInput(e.target.value);
-    // if (!activeChatId) return;
-    // setTyping(activeChatId, true);
-    // clearTimeout(typingTimeoutRef.current);
-    // typingTimeoutRef.current = setTimeout(() => {
-    //   setTyping(activeChatId, false);
-    // }, 2000);
+    if (!activeChatId) return;
+    setTyping(activeChatId, true);
+    clearTimeout(typingTimeoutRef.current);
+    typingTimeoutRef.current = setTimeout(() => {
+      setTyping(activeChatId, false);
+    }, 2000);
   };
 
   const activeChat = chats.find((c: IChat) => c._id === activeChatId);

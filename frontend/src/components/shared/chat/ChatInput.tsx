@@ -1,23 +1,25 @@
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { SendIcon } from "lucide-react";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function ChatInput({ value, onChange, onSubmit, disabled }: any) {
   return (
     <form onSubmit={onSubmit} className="p-4 border-t border-base-300">
       <div className="flex items-center gap-3">
-        <input
+        <Input
           type="text"
           value={value}
           onChange={onChange}
           placeholder="Type a message..."
-          className="input input-bordered flex-1 rounded-xl bg-base-300/40 border-base-300 placeholder:text-base-content/60"
+          className="flex-1 rounded-xl"
         />
-        <button
+        <Button
           type="submit"
           disabled={disabled}
-          className="btn rounded-xl bg-linear-to-r from-amber-500 to-orange-500 border-none disabled:btn-disabled"
+          className=" bg-linear-to-r from-amber-500 to-orange-500 border-none disabled:btn-disabled"
         >
           <SendIcon className="size-5" />
-        </button>
+        </Button>
       </div>
     </form>
   );

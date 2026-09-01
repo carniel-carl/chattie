@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { UsersIcon, SearchIcon } from "lucide-react";
 import type { IUser } from "@/types";
-// import { useSocketStore } from "../lib/socket";
+import { useSocketStore } from "@/lib/socket";
 import { useUsers } from "@/hooks/useUsers";
 import { Input } from "@/components/ui/input";
 import {
@@ -14,9 +14,9 @@ import {
 //eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function NewChatModal({ onStartChat, isPending, isOpen, onClose }: any) {
   const [searchQuery, setSearchQuery] = useState("");
-  //   const { onlineUsers } = useSocketStore();
+  const { onlineUsers } = useSocketStore();
   const { data: allUsers = [] } = useUsers();
-  //   const isOnline = (id) => onlineUsers.has(id);
+  const isOnline = (id: string) => onlineUsers.has(id);
 
   const handleStartChat = (participantId: string) => {
     onStartChat(participantId);
@@ -70,9 +70,9 @@ export function NewChatModal({ onStartChat, isPending, isOpen, onClose }: any) {
                   >
                     <div className="relative">
                       <img src={u.avatar} className="w-10 h-10 rounded-full" />
-                      {/* {isOnline(u._id) && (
-                  <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-success rounded-full border-2 border-base-200" />
-                )} */}
+                      {isOnline(u._id) && (
+                        <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-success rounded-full border-2 border-base-200" />
+                      )}
                     </div>
                     <div className="text-left">
                       <p className="  font-medium text-sm">{u.name}</p>

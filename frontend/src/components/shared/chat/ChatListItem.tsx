@@ -1,11 +1,11 @@
+import { useSocketStore } from "@/lib/socket";
 import { formatTime } from "@/lib/utils";
-// import { useSocketStore } from "../lib/socket";
 
 //eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function ChatListItem({ chat, isActive, onClick }: any) {
-  //   const { onlineUsers, typingUsers } = useSocketStore();
-  //   const isOnline = onlineUsers.has(chat.participant?._id);
-  //   const isTyping = !!typingUsers.get(chat._id);
+  const { onlineUsers, typingUsers } = useSocketStore();
+  const isOnline = onlineUsers.has(chat.participant?._id);
+  const isTyping = !!typingUsers.get(chat._id);
 
   return (
     <button
@@ -19,9 +19,9 @@ export function ChatListItem({ chat, isActive, onClick }: any) {
           src={chat.participant?.avatar}
           className="w-11 h-11 rounded-full bg-base-300/40"
         />
-        {/* {isOnline && (
-          <span className="absolute bottom-0 right-0 w-3 h-3 bg-success rounded-full border-2 border-base-200" />
-        )} */}
+        {isOnline && (
+          <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-base-200" />
+        )}
       </div>
       <div className="flex-1 text-left min-w-0">
         <div className="flex items-center justify-between">
@@ -34,9 +34,9 @@ export function ChatListItem({ chat, isActive, onClick }: any) {
             </span>
           )}
         </div>
-        {/* <p className="text-xs text-base-content/70 truncate mt-0.5">
+        <p className="text-xs text-base-content/70 truncate mt-0.5">
           {isTyping ? "typing..." : chat.lastMessage?.text || "No messages yet"}
-        </p> */}
+        </p>
       </div>
     </button>
   );
