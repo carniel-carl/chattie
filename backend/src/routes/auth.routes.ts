@@ -1,9 +1,8 @@
-import Router from "express";
+import { Router } from "express";
+import { getMe } from "../controller/authController";
 
 const authRouter = Router();
 
-authRouter.get("/", (req, res) => {
-  res.send("Auth route is working!");
-});
+authRouter.get("/me", getMe);
 
 export default authRouter;
