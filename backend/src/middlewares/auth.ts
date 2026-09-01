@@ -2,7 +2,7 @@ import type { NextFunction, Request, Response } from "express";
 import { getAuth } from "@clerk/express";
 import User from "../models/Users";
 
-export type AuthRequest = Request & {
+export type AuthRequest<P = Request["params"]> = Request<P> & {
   userId?: string;
 };
 
