@@ -9,13 +9,13 @@ export function MessageBubble({ message, currentUser }: any) {
       <div
         className={`max-w-md px-4 py-2.5 rounded-2xl ${
           isMe
-            ? "bg-linear-to-r from-amber-500 to-orange-500 text-primary-content"
-            : "bg-base-300/40 text-base-content"
+            ? "bg-linear-to-r from-lime-800 to-teal-800 "
+            : "bg-teal-800/20 text-base-content"
         }`}
       >
         <p className="text-sm">{message.text}</p>
         <p
-          className={`text-xs mt-1 ${isMe ? "text-primary-content/80" : "text-base-content/70"}`}
+          className={`text-xs mt-1 ${isMe ? "text-foreground" : "text-muted-foreground"}`}
         >
           {formatTime(message.createdAt)}
         </p>

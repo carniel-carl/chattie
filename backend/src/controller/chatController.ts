@@ -12,7 +12,8 @@ const getChats = async (
     const chats = await Chat.find({ participants: userId })
       .populate("participants", "name email avatar")
       .populate("lastMessage")
-      .sort({ lastMessage: -1 });
+      // sort on the timestamp, not the lastMessage ObjectId
+      .sort({ lastMessageAt: -1 });
 
     // Format the chats to only include the other participant and the last message
     const formattedChats = chats.map((chat) => {
@@ -22,8 +23,11 @@ const getChats = async (
 
       return {
         _id: chat._id,
-        participants: otherParticipant ? [otherParticipant] : [],
+        // the client renders a single "participant" (the other person), so send
+        // that rather than an array it would have to unwrap
+        participant: otherParticipant ?? null,
         lastMessage: chat.lastMessage,
+        lastMessageAt: chat.lastMessageAt,
         createdAt: chat.createdAt,
         updatedAt: chat.updatedAt,
       };
@@ -63,9 +67,14 @@ const createOrGetChat = async (
       chat = await chat.populate("participants", "name email avatar");
     }
 
+    // same shape as getChats: only the other person
+    const otherParticipant = chat.participants.find(
+      (participant) => participant._id.toString() !== userId,
+    );
+
     res.json({
       _id: chat._id,
-      participants: chat.participants,
+      participant: otherParticipant ?? null,
       lastMessage: chat.lastMessage,
       lastMessageAt: chat.lastMessageAt,
       createdAt: chat.createdAt,

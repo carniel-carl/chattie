@@ -37,7 +37,8 @@ export const initializeSocket = (httpServer: HttpServer) => {
 
       next();
     } catch (error: any) {
-      next(new Error(error));
+      // wrapping an Error in an Error hides the reason from the client
+      next(new Error(error?.message || "Authentication error"));
     }
   });
 
@@ -46,11 +47,11 @@ export const initializeSocket = (httpServer: HttpServer) => {
   io.on("connection", (socket) => {
     const userId = socket.data.userId;
 
+    // store user in the onlineUsers map first, so the snapshot below is complete
+    onlineUsers.set(userId, socket.id);
+
     // send list of currently online users to the newly connected client
     socket.emit("online-users", { userIds: Array.from(onlineUsers.keys()) });
-
-    // store user in the onlineUsers map
-    onlineUsers.set(userId, socket.id);
 
     // notify others that this current user is online
     socket.broadcast.emit("user-online", { userId });
@@ -94,10 +95,9 @@ export const initializeSocket = (httpServer: HttpServer) => {
 
           await message.populate("sender", "name avatar");
 
-          // emit to chat room (for users inside the chat)
-          io.to(`chat:${chatId}`).emit("new-message", message);
-
-          // also emit to participants' personal rooms (for chat list view)
+          // every participant (sender included) is in their own personal room,
+          // so this reaches each of them exactly once - emitting to the chat
+          // room as well would deliver a duplicate to anyone viewing the chat
           for (const participantId of chat.participants) {
             io.to(`user:${participantId}`).emit("new-message", message);
           }
@@ -136,6 +136,10 @@ export const initializeSocket = (httpServer: HttpServer) => {
     });
 
     socket.on("disconnect", () => {
+      // the user may have opened another tab (or React StrictMode may have
+      // remounted): only go offline if this socket is still the current one
+      if (onlineUsers.get(userId) !== socket.id) return;
+
       onlineUsers.delete(userId);
 
       // notify others
